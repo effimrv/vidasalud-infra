@@ -74,7 +74,11 @@ docker compose -f docker-compose.yml -f docker-compose.ec2.yml --profile apps up
 
 ### Frontend con HTTPS
 
-El contenedor `frontend` sirve Angular por HTTP en el puerto 80 de la EC2. **CloudFront** se pone delante y lo entrega por HTTPS (`https://<id>.cloudfront.net`), que es lo que exige Microsoft Entra ID para la URL de retorno del login. Esa URL debe estar registrada en Entra ID (plataforma *Single-page application*) y en el CORS del API Gateway.
+El contenedor `frontend` sirve Angular por HTTP en el puerto 80 de la EC2. Un **API Gateway HTTP exclusivo del frontend** (`vidasalud-frontend`, rutas `GET /` y `GET /{proxy+}`, solo lectura) se pone delante y lo entrega por HTTPS, que es lo que exige Microsoft Entra ID para la URL de retorno del login. Se usa API Gateway porque la cuenta AWS Academy no permite CloudFront.
+
+- URL pública: **https://e7u1iiqh4k.execute-api.us-east-1.amazonaws.com**
+- Esa URL está registrada en Entra ID (plataforma *Single-page application*) y en el CORS del API Gateway del backend (`dzv5td4m80`).
+- El API del backend no cambia: sigue con sus 11 rutas explícitas y el autorizador JWT.
 
 En el Security Group abre `15672` (panel) y `8083` (Swagger de notify) **solo para tu IP**. **No expongas `5672` a internet.**
 
