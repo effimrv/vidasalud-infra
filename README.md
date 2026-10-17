@@ -56,12 +56,21 @@ docker compose --profile apps down
 
 ## Despliegue en la nube (EC2)
 
-1. Instala Docker y el plugin de Compose en la instancia.
-2. Clona `vidasalud-infra`, `vidasalud-ms-appointments` y `vidasalud-ms-notify` en la misma carpeta.
-3. Crea el `.env` con claves seguras.
-4. Ejecuta `docker compose --profile apps up -d --build`.
-5. En el Security Group abre solo lo necesario: `15672` (panel, limitado a tu IP) y `8081`/`8083` si el BFF o el API Gateway deben llegar a los servicios. **No expongas `5672` a internet.**
+En la EC2, `bff` y `catalog` corren con `docker run` en la red `vidasalud-net`. El archivo `docker-compose.ec2.yml` reutiliza esa red, para que el BFF siga encontrando a `appointments` por nombre, y limita la memoria de cada contenedor.
 
-Si `appointments` ya corre en la instancia fuera de Compose, detén ese contenedor antes, para que no choquen los puertos. Revisa también que la variable `APPOINTMENTS_URL` del BFF siga apuntando a él.
+```bash
+# Una sola vez: plugin de Docker Compose
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
+sudo curl -sSL "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-$(uname -m)" \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+cd ~/vidasalud-infra
+cp .env.example .env            # cambia las claves
+docker rm -f appointments        # lo reemplaza el appointments del compose (mismo nombre y red)
+docker compose -f docker-compose.yml -f docker-compose.ec2.yml --profile apps up -d --build
+```
+
+En el Security Group abre `15672` (panel) y `8083` (Swagger de notify) **solo para tu IP**. **No expongas `5672` a internet.**
 
 > **Nota:** con 2 nodos, las colas clásicas viven en el nodo donde se crearon. El clúster comparte usuarios, exchanges y la definición de las colas, pero si cae el nodo dueño de una cola, esa cola queda no disponible hasta que vuelva.

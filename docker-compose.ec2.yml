@@ -1,0 +1,24 @@
+# Ajustes para la EC2 donde ya corren bff y catalog (con docker run) en la red vidasalud-net.
+# Uso: docker compose -f docker-compose.yml -f docker-compose.ec2.yml --profile apps up -d --build
+#
+# - Usa la red existente vidasalud-net, así el BFF sigue encontrando a "appointments" por nombre.
+# - Limita la memoria de cada contenedor para que todo quepa en una instancia pequeña.
+
+services:
+  rabbitmq1:
+    mem_limit: 320m
+  rabbitmq2:
+    mem_limit: 320m
+  appointments:
+    mem_limit: 420m
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
+  notify:
+    mem_limit: 380m
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx220m -XX:+UseSerialGC"
+
+networks:
+  vidasalud:
+    name: vidasalud-net
+    external: true
