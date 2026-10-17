@@ -1,12 +1,13 @@
 # vidasalud-infra
 
-Archivos de Docker Compose para levantar la infraestructura de VidaSalud: un **clúster RabbitMQ de 2 nodos** y los microservicios que lo usan (`appointments` y `notify`).
+Archivos de Docker Compose para levantar la infraestructura de VidaSalud: un **clúster RabbitMQ de 2 nodos**, los microservicios que lo usan (`appointments` y `notify`) y el **frontend** (Angular servido con nginx).
 
 ## Contenido
 
 | Archivo | Descripción |
 |---|---|
-| `docker-compose.yml` | Nodos `rabbitmq1` y `rabbitmq2` en clúster, con panel de administración, más los servicios `appointments` y `notify` (perfil `apps`) |
+| `docker-compose.yml` | Nodos `rabbitmq1` y `rabbitmq2` en clúster, con panel de administración, más `appointments`, `notify` y `frontend` (perfil `apps`) |
+| `docker-compose.ec2.yml` | Ajustes para la EC2: red existente `vidasalud-net` y límites de memoria |
 | `rabbitmq/rabbitmq.conf` | Formación automática del clúster (`classic_config`) y manejo de particiones (`autoheal`) |
 | `.env.example` | Usuario, contraseña y Erlang cookie compartida por los nodos |
 
@@ -70,6 +71,10 @@ cp .env.example .env            # cambia las claves
 docker rm -f appointments        # lo reemplaza el appointments del compose (mismo nombre y red)
 docker compose -f docker-compose.yml -f docker-compose.ec2.yml --profile apps up -d --build
 ```
+
+### Frontend con HTTPS
+
+El contenedor `frontend` sirve Angular por HTTP en el puerto 80 de la EC2. **CloudFront** se pone delante y lo entrega por HTTPS (`https://<id>.cloudfront.net`), que es lo que exige Microsoft Entra ID para la URL de retorno del login. Esa URL debe estar registrada en Entra ID (plataforma *Single-page application*) y en el CORS del API Gateway.
 
 En el Security Group abre `15672` (panel) y `8083` (Swagger de notify) **solo para tu IP**. **No expongas `5672` a internet.**
 

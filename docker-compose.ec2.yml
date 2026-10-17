@@ -13,6 +13,8 @@ services:
     mem_limit: 420m
     environment:
       JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
+  frontend:
+    mem_limit: 64m
   notify:
     mem_limit: 380m
     environment:
