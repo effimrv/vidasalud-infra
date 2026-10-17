@@ -55,6 +55,8 @@ services:
       RABBITMQ_ADDRESSES: rabbitmq1:5672,rabbitmq2:5672
       # Pacientes simulados que reservan y cancelan horas (false para apagarlos).
       DEMANDA_SIMULADA: ${DEMANDA_SIMULADA:-true}
+      # Contraseña de la base de datos en Supabase (se define en .env, nunca en el repositorio).
+      DB_PASSWORD: ${DB_PASSWORD:-}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
     ports:
