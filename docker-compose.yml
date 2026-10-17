@@ -53,6 +53,8 @@ services:
     restart: unless-stopped
     environment:
       RABBITMQ_ADDRESSES: rabbitmq1:5672,rabbitmq2:5672
+      # Pacientes simulados que reservan y cancelan horas (false para apagarlos).
+      DEMANDA_SIMULADA: ${DEMANDA_SIMULADA:-true}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
     ports:
