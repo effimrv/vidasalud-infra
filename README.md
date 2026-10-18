@@ -2,6 +2,8 @@
 
 Archivos de Docker Compose para levantar la infraestructura de VidaSalud: un **clúster RabbitMQ de 2 nodos**, los microservicios que lo usan (`appointments` y `notify`) y el **frontend** (Angular servido con nginx).
 
+Matriz de funcionalidades y documentación del proyecto: [vidasalud-docs](https://github.com/effimrv/vidasalud-docs).
+
 ## Contenido
 
 | Archivo | Descripción |
@@ -9,7 +11,7 @@ Archivos de Docker Compose para levantar la infraestructura de VidaSalud: un **c
 | `docker-compose.yml` | Nodos `rabbitmq1` y `rabbitmq2` en clúster, con panel de administración, más `appointments`, `notify` y `frontend` (perfil `apps`) |
 | `docker-compose.ec2.yml` | Ajustes para la EC2: red existente `vidasalud-net` y límites de memoria |
 | `rabbitmq/rabbitmq.conf` | Formación automática del clúster (`classic_config`) y manejo de particiones (`autoheal`) |
-| `.env.example` | Usuario, contraseña y Erlang cookie compartida por los nodos |
+| `.env.example` | Usuario, contraseña y Erlang cookie de RabbitMQ, contraseña de la base de datos (`DB_PASSWORD`) y el interruptor de la demanda simulada (`DEMANDA_SIMULADA`) |
 
 ## Cómo funciona el clúster
 
@@ -78,7 +80,7 @@ El contenedor `frontend` sirve Angular por HTTP en el puerto 80 de la EC2. Un **
 
 - URL pública: **https://e7u1iiqh4k.execute-api.us-east-1.amazonaws.com**
 - Esa URL está registrada en Entra ID (plataforma *Single-page application*) y en el CORS del API Gateway del backend (`dzv5td4m80`).
-- El API del backend no cambia: sigue con sus 11 rutas explícitas y el autorizador JWT.
+- El API del backend no cambia: sigue con una ruta explícita por cada endpoint del BFF y el autorizador JWT.
 
 En el Security Group abre `15672` (panel) y `8083` (Swagger de notify) **solo para tu IP**. **No expongas `5672` a internet.**
 
