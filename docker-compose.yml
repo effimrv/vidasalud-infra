@@ -76,6 +76,8 @@ services:
       RABBITMQ_ADDRESSES: rabbitmq1:5672,rabbitmq2:5672
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
+      SMTP_USUARIO: ${SMTP_USUARIO}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     ports:
       - "8083:8083"
     depends_on:
