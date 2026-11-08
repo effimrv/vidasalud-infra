@@ -15,6 +15,14 @@ services:
       JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
   frontend:
     mem_limit: 64m
+  report:
+    mem_limit: 220m
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx150m -XX:+UseSerialGC"
+  audit:
+    mem_limit: 220m
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx150m -XX:+UseSerialGC"
   notify:
     mem_limit: 380m
     environment:
