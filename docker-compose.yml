@@ -59,6 +59,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
+      # Clúster Kafka (perfil de docker-compose.kafka.yml). Si no está levantado, la cita se guarda igual.
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka1:29092,kafka2:29092,kafka3:29092}
     ports:
       - "8081:8081"
     depends_on:
@@ -85,6 +87,33 @@ services:
         condition: service_healthy
       rabbitmq2:
         condition: service_healthy
+    networks:
+      - vidasalud
+
+  # Consumidores Kafka: requieren docker-compose.kafka.yml levantado en la misma red.
+  report:
+    profiles: ["apps"]
+    build: ../vidasalud-ms-report
+    container_name: report
+    restart: unless-stopped
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka1:29092,kafka2:29092,kafka3:29092}
+      SEGURIDAD_HABILITADA: ${SEGURIDAD_HABILITADA:-true}
+    ports:
+      - "8084:8084"
+    networks:
+      - vidasalud
+
+  audit:
+    profiles: ["apps"]
+    build: ../vidasalud-ms-audit
+    container_name: audit
+    restart: unless-stopped
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka1:29092,kafka2:29092,kafka3:29092}
+      SEGURIDAD_HABILITADA: ${SEGURIDAD_HABILITADA:-true}
+    ports:
+      - "8085:8085"
     networks:
       - vidasalud
 

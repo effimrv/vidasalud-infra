@@ -85,3 +85,27 @@ El contenedor `frontend` sirve Angular por HTTP en el puerto 80 de la EC2. Un **
 En el Security Group abre `15672` (panel) y `8083` (Swagger de notify) **solo para tu IP**. **No expongas `5672` a internet.**
 
 > **Nota:** con 2 nodos, las colas clásicas viven en el nodo donde se crearon. El clúster comparte usuarios, exchanges y la definición de las colas, pero si cae el nodo dueño de una cola, esa cola queda no disponible hasta que vuelva.
+
+## Clúster Kafka
+
+`docker-compose.kafka.yml` levanta 3 nodos Zookeeper, 3 brokers Kafka y Kafka-UI.
+
+```bash
+# Solo Kafka (local)
+docker compose -f docker-compose.kafka.yml up -d
+
+# Kafka + RabbitMQ + apps (incluye report y audit, consumidores de Kafka)
+docker compose -f docker-compose.yml -f docker-compose.kafka.yml --profile apps up -d --build
+
+# En la EC2 (red vidasalud-net)
+docker compose -f docker-compose.yml -f docker-compose.kafka.yml -f docker-compose.ec2.yml --profile apps up -d --build
+```
+
+| Servicio | Puerto en el host | Uso |
+|---|---|---|
+| kafka1 / kafka2 / kafka3 | 9092 / 9093 / 9094 | Brokers (acceso desde el equipo) |
+| kafka-ui | 8090 | Administración visual de brokers, tópicos, particiones y mensajes |
+| report | 8084 | KPIs y administrador de Kafka |
+| audit | 8085 | Timeline de auditoría |
+
+Dentro de la red de Docker, las apps usan `KAFKA_BOOTSTRAP_SERVERS=kafka1:29092,kafka2:29092,kafka3:29092`.
