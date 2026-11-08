@@ -9,6 +9,7 @@ Matriz de funcionalidades y documentación del proyecto: [vidasalud-docs](https:
 | Archivo | Descripción |
 |---|---|
 | `docker-compose.yml` | Nodos `rabbitmq1` y `rabbitmq2` en clúster, con panel de administración, más `appointments`, `notify` y `frontend` (perfil `apps`) |
+| `docker-compose.kafka.yml` | Clúster Kafka: 3 nodos Zookeeper, 3 brokers y Kafka-UI (puerto 8090) |
 | `docker-compose.ec2.yml` | Ajustes para la EC2: red existente `vidasalud-net` y límites de memoria |
 | `rabbitmq/rabbitmq.conf` | Formación automática del clúster (`classic_config`) y manejo de particiones (`autoheal`) |
 | `.env.example` | Usuario, contraseña y Erlang cookie de RabbitMQ, contraseña de la base de datos (`DB_PASSWORD`) y el interruptor de la demanda simulada (`DEMANDA_SIMULADA`) |
